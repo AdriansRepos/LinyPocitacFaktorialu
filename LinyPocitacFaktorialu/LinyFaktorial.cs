@@ -24,7 +24,7 @@ namespace LinyPocitacFaktorialu
                 Console.ResetColor();
 
                 // nastavíme hodnota na 0, aby se program nezhroutil
-                hodnota = - 1; // označíme jako neplatné
+                hodnota = -1; // označíme jako neplatné
                 return;
             }
             hodnota = cislo;
@@ -33,11 +33,17 @@ namespace LinyPocitacFaktorialu
 
         private void AnimacePremysleni()
         {
-            int delka = 20;      // délka lišty
-            int pozice = 0;      // aktuální pozice světla
-            int smer = 1;        // 1 = doprava, -1 = doleva
+            int delka = 20;
+            int pozice = 0;
+            int smer = 1;
 
-            for (int t = 0; t < 40; t++) // počet cyklů animace
+            // schovat kurzor
+            Console.Write("\u001b[?25l");
+
+            // počet cyklů podle čísla
+            int cykly = Math.Clamp(hodnota * 2, 10, 120);
+
+            for (int t = 0; t < cykly; t++)
             {
                 Console.Write("\rPřemýšlím: [");
 
@@ -45,7 +51,7 @@ namespace LinyPocitacFaktorialu
                 {
                     if (i == pozice || i == pozice - 1 || i == pozice + 1)
                     {
-                        Console.ForegroundColor = ConsoleColor.Cyan; // světle modrá
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.Write("█");
                     }
                     else
@@ -58,18 +64,21 @@ namespace LinyPocitacFaktorialu
                 Console.ResetColor();
                 Console.Write("]");
 
-                Thread.Sleep(60); // rychlost animace
+                Thread.Sleep(60);
 
-                // pohyb světla
                 pozice += smer;
 
                 if (pozice <= 0 || pozice >= delka - 1)
-                    smer *= -1; // změna směru
+                    smer *= -1;
             }
+
+            // ukázat kurzor
+            Console.Write("\u001b[?25h");
 
             Console.ResetColor();
             Console.WriteLine();
         }
+
 
 
         private bool JeVikend()
@@ -132,7 +141,7 @@ namespace LinyPocitacFaktorialu
             AnimacePremysleni();
 
             // Dramatická nálada
-            if (rng.Next(0, 4) == 0)
+            if (rng.Next(0, 3) == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Tohle nezvládnu... ale dobře, zkusím to.");

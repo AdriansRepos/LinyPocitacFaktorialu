@@ -180,10 +180,8 @@ Projekt je licencován pod FňukLicense 1.0:
 
 ---
 
-## Bonus: Co všechno tahle verze obsahuje
+## Bonus: Co všechno verze 1.0.0 obsahuje
 
-- animace přemýšlení
-- barevné hlášky podle typu
 - víkendový režim
 - únava
 - nálady
@@ -195,3 +193,6 @@ Projekt je licencován pod FňukLicense 1.0:
 - pasivní agresivita
 - a hlavně: lenost
 
+## Verze 1.1.0 obsahuje navíc
+- animace přemýšlení
+- barevné hlášky podle typu

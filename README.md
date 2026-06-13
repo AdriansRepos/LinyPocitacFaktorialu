@@ -201,3 +201,7 @@ Projekt je licencován pod FňukLicense 1.0:
 - opraveno víkendové počítání na náhodnost 40% odmítnutí počítání o víkendu
 - opravena chyba, kdy po zadání záporného čísla aplikace už nepadá
 - oprava chyby, kde při záporném čísle program vypisoval dvě hlášky místo jedné
+
+## Verze 1.3.0
+- dopracovaný cyklus animace přemýšlení - čím větší císlo, tím déle přemýšlí
+- při přemýšlení se schová kurzor, po dokončení přemýšlení se zjeví

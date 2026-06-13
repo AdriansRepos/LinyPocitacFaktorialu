@@ -205,3 +205,7 @@ Projekt je licencován pod FňukLicense 1.0:
 ## Verze 1.3.0
 - dopracovaný cyklus animace přemýšlení - čím větší císlo, tím déle přemýšlí
 - při přemýšlení se schová kurzor, po dokončení přemýšlení se zjeví
+
+## Verze 1.4.0
+- přidáno remcání na velké čísla
+- při číslech nad 31 je 50% sance odmítnutí výpočtu faktoriálu

@@ -95,10 +95,11 @@ namespace LinyPocitacFaktorialu
                 pocetOdmítnutí++;
                 return -1;
             }
+
             // Víkendový režim – 40 % šance odmítnutí
             if (JeVikend())
             {
-                if (rng.NextDouble() < 0.40) // 40 % odmítnutí
+                if (rng.NextDouble() < 0.40)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Je víkend. Dneska fakt ne.");
@@ -140,13 +141,44 @@ namespace LinyPocitacFaktorialu
             // Animace přemýšlení
             AnimacePremysleni();
 
-            // Dramatická nálada
-            if (rng.Next(0, 3) == 0)
+            // ⭐ DRAMATICKÁ NÁLADA PODLE VELIKOSTI ČÍSLA ⭐
+            if (hodnota <= 5)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Meh, to dám levou zadní.");
+                Console.ResetColor();
+            }
+            else if (hodnota <= 15)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Tohle nezvládnu... ale dobře, zkusím to.");
                 Console.ResetColor();
             }
+            else if (hodnota <= 30)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Pane bože… to je moc! Jsi normální? Vždyť mi shoří procesor!!! Naposled!");
+                Console.ResetColor();
+            }
+            else
+            {
+                // ⭐ 50% šance, že to odmítne úplně ⭐
+                if (rng.NextDouble() < 0.50)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Tohle počítat nebudu!!!");
+                    Console.ResetColor();
+
+                    pocetOdmítnutí++;
+                    return -1; // → hlavní program si vyžádá nové číslo
+                }
+
+                // ⭐ 50% šance, že to vezme, ale bude remcat ⭐
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Pane bože… to je obří číslo! Ale dobře… snad to dám...");
+                Console.ResetColor();
+            }
+
 
             int vysledek = 1;
 
@@ -164,6 +196,7 @@ namespace LinyPocitacFaktorialu
 
             return vysledek;
         }
+
 
         public void Statistiky()
         {

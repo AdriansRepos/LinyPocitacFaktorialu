@@ -20,10 +20,16 @@ namespace LinyPocitacFaktorialu
             if (cislo < 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                throw new Exception("Neumím záporné čísla, to je na mně moc práce.");
+                Console.WriteLine("Neumím záporné čísla, to je na mně moc práce.");
+                Console.ResetColor();
+
+                // nastavíme hodnota na 0, aby se program nezhroutil
+                hodnota = - 1; // označíme jako neplatné
+                return;
             }
             hodnota = cislo;
         }
+
 
         private void AnimacePremysleni()
         {
@@ -74,14 +80,23 @@ namespace LinyPocitacFaktorialu
 
         public int Faktorial()
         {
-            // Víkendový režim
-            if (JeVikend())
+            // Neplatný vstup (záporné číslo)
+            if (hodnota < 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Je víkend. Dneska fakt ne.");
-                Console.ResetColor();
                 pocetOdmítnutí++;
                 return -1;
+            }
+            // Víkendový režim – 40 % šance odmítnutí
+            if (JeVikend())
+            {
+                if (rng.NextDouble() < 0.40) // 40 % odmítnutí
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Je víkend. Dneska fakt ne.");
+                    Console.ResetColor();
+                    pocetOdmítnutí++;
+                    return -1;
+                }
             }
 
             // Únava po 3 výpočtech

@@ -196,3 +196,8 @@ Projekt je licencován pod FňukLicense 1.0:
 ## Verze 1.1.0 obsahuje navíc
 - animace přemýšlení
 - barevné hlášky podle typu
+
+## Verze 1.2.0
+- opraveno víkendové počítání na náhodnost 40% odmítnutí počítání o víkendu
+- opravena chyba, kdy po zadání záporného čísla aplikace už nepadá
+- oprava chyby, kde při záporném čísle program vypisoval dvě hlášky místo jedné

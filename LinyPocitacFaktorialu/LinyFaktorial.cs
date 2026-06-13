@@ -18,21 +18,53 @@ namespace LinyPocitacFaktorialu
         public LinyFaktorial(int cislo)
         {
             if (cislo < 0)
-                throw new Exception("Neumím záporné čísla, to je moc práce.");
-
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new Exception("Neumím záporné čísla, to je na mně moc práce.");
+            }
             hodnota = cislo;
         }
 
         private void AnimacePremysleni()
         {
-            string[] anim = { ".", "..", "...", "...." };
-            foreach (var a in anim)
+            int delka = 20;      // délka lišty
+            int pozice = 0;      // aktuální pozice světla
+            int smer = 1;        // 1 = doprava, -1 = doleva
+
+            for (int t = 0; t < 40; t++) // počet cyklů animace
             {
-                Console.Write($"\rPřemýšlím{a}");
-                Thread.Sleep(1000);
+                Console.Write("\rPřemýšlím: [");
+
+                for (int i = 0; i < delka; i++)
+                {
+                    if (i == pozice || i == pozice - 1 || i == pozice + 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan; // světle modrá
+                        Console.Write("█");
+                    }
+                    else
+                    {
+                        Console.ResetColor();
+                        Console.Write("░");
+                    }
+                }
+
+                Console.ResetColor();
+                Console.Write("]");
+
+                Thread.Sleep(60); // rychlost animace
+
+                // pohyb světla
+                pozice += smer;
+
+                if (pozice <= 0 || pozice >= delka - 1)
+                    smer *= -1; // změna směru
             }
-            Console.Write("\r                \r");
+
+            Console.ResetColor();
+            Console.WriteLine();
         }
+
 
         private bool JeVikend()
         {
@@ -45,7 +77,9 @@ namespace LinyPocitacFaktorialu
             // Víkendový režim
             if (JeVikend())
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Je víkend. Dneska fakt ne.");
+                Console.ResetColor();
                 pocetOdmítnutí++;
                 return -1;
             }
@@ -53,7 +87,9 @@ namespace LinyPocitacFaktorialu
             // Únava po 3 výpočtech
             if (pocetVypoctu >= 3)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Jsem unavený. Už toho bylo dost.");
+                Console.ResetColor();
                 pocetOdmítnutí++;
                 return -1;
             }
@@ -61,7 +97,9 @@ namespace LinyPocitacFaktorialu
             // Náhodná lenost
             if (rng.Next(0, 5) == 0)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Dneska se mi nechce.");
+                Console.ResetColor();
                 pocetOdmítnutí++;
                 return -1;
             }
@@ -69,7 +107,9 @@ namespace LinyPocitacFaktorialu
             // Už to počítal
             if (ulozenyFaktorial.HasValue)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Už jsem to jednou počítal, tady máš.");
+                Console.ResetColor();
                 return ulozenyFaktorial.Value;
             }
 
@@ -78,7 +118,11 @@ namespace LinyPocitacFaktorialu
 
             // Dramatická nálada
             if (rng.Next(0, 4) == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Tohle nezvládnu... ale dobře, zkusím to.");
+                Console.ResetColor();
+            }
 
             int vysledek = 1;
 
@@ -90,7 +134,10 @@ namespace LinyPocitacFaktorialu
             ulozenyFaktorial = vysledek;
             pocetVypoctu++;
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("No dobře, že jsi to ty, tak jsem ti to spočítal.");
+            Console.ResetColor();
+
             return vysledek;
         }
 

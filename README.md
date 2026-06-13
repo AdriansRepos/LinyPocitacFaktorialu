@@ -128,7 +128,7 @@ public int Faktorial()
         pocetOdmítnutí++;
         return -1;
     }
-    ```
+```
 ---
 
 ## Ukázka chování

@@ -1,7 +1,8 @@
 ﻿using LinyPocitacFaktorialu;
 
 string prikaz = "konec";
-string vstup = "";
+string vstup;
+LinyFaktorial liny = new();
 
 do
 {
@@ -22,8 +23,7 @@ do
         continue;
     }
 
-    LinyFaktorial liny = new LinyFaktorial(cislo);
-    int f = liny.Faktorial();
+    int f = liny.Faktorial(cislo);
 
     if (f != -1)
     {
@@ -34,7 +34,8 @@ do
 
 } while (vstup != prikaz);
 
-// Hláška na konec
+liny.Statistiky();
+
 Console.ForegroundColor = ConsoleColor.Magenta;
 Console.WriteLine("\nNo konečně máš dobrý nápad.");
 Console.ResetColor();

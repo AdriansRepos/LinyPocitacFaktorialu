@@ -6,42 +6,144 @@ using System.Threading.Tasks;
 
 namespace LinyPocitacFaktorialu
 {
+    /// <summary>
+    /// Simuluje "líného" pracovníka, který počítá faktoriály.
+    /// Odmlouvá, unaví se po několika výpočtech a pamatuje si
+    /// už jednou spočítané hodnoty.
+    /// </summary>
     class LinyFaktorial
     {
-        private int hodnota;
-        private int? ulozenyFaktorial;
-        private Random rng = new Random();
+        private readonly Dictionary<int, int> jizSpocitane = [];
+        private readonly Random rng = new();
 
         private int pocetVypoctu = 0;
-        private int pocetOdmítnutí = 0;
+        private int pocetOdmitnuti = 0;
 
-        public LinyFaktorial(int cislo)
+        /// <summary>
+        /// Spočítá faktoriál zadaného čísla. Podle nálady a historie
+        /// předchozích výpočtů může odmítnout, otálet, nebo použít
+        /// dříve uložený výsledek.
+        /// </summary>
+        /// <param name="cislo">Číslo, jehož faktoriál se má spočítat.</param>
+        /// <returns>Výsledný faktoriál, nebo -1 při odmítnutí/neplatném vstupu.</returns>
+        public int Faktorial(int cislo)
         {
             if (cislo < 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Neumím záporné čísla, to je na mně moc práce.");
-                Console.ResetColor();
-
-                // nastavíme hodnota na 0, aby se program nezhroutil
-                hodnota = -1; // označíme jako neplatné
-                return;
+                VypisBarevne("Neumím záporné čísla, to je na mně moc práce.", ConsoleColor.Red);
+                pocetOdmitnuti++;
+                return -1;
             }
-            hodnota = cislo;
+
+            // Už tohle číslo počítal dřív
+            if (jizSpocitane.TryGetValue(cislo, out int ulozenyVysledek))
+            {
+                VypisBarevne("Už jsem to jednou počítal, tady máš.", ConsoleColor.Yellow);
+                return ulozenyVysledek;
+            }
+
+            if (JeVikend() && rng.NextDouble() < 0.40)
+            {
+                VypisBarevne("Je víkend. Dneska fakt ne.", ConsoleColor.Red);
+                pocetOdmitnuti++;
+                return -1;
+            }
+
+            if (pocetVypoctu >= 3)
+            {
+                VypisBarevne("Jsem unavený. Už toho bylo dost.", ConsoleColor.Red);
+                pocetOdmitnuti++;
+                return -1;
+            }
+
+            if (rng.Next(0, 5) == 0)
+            {
+                VypisBarevne("Dneska se mi nechce.", ConsoleColor.Red);
+                pocetOdmitnuti++;
+                return -1;
+            }
+
+            if (!ReagujPodleVelikosti(cislo))
+            {
+                pocetOdmitnuti++;
+                return -1; // odmítl kvůli velikosti čísla
+            }
+
+            AnimacePremysleni(cislo);
+
+            int vysledek = SpocitejFaktorial(cislo);
+            jizSpocitane[cislo] = vysledek;
+            pocetVypoctu++;
+
+            VypisBarevne("No dobře, že jsi to ty, tak jsem ti to spočítal.", ConsoleColor.Green);
+            return vysledek;
         }
 
-
-        private void AnimacePremysleni()
+        /// <summary>
+        /// Zobrazí náladovou hlášku podle velikosti čísla.
+        /// U velmi velkých čísel má 50% šanci výpočet rovnou odmítnout.
+        /// </summary>
+        /// <returns>False, pokud výpočet odmítá kvůli velikosti čísla.</returns>
+        private bool ReagujPodleVelikosti(int cislo)
         {
-            int delka = 20;
+            if (cislo <= 5)
+            {
+                VypisBarevne("Meh, to dám levou zadní.", ConsoleColor.Yellow);
+            }
+            else if (cislo <= 15)
+            {
+                VypisBarevne("Tohle nezvládnu... ale dobře, zkusím to.", ConsoleColor.Yellow);
+            }
+            else if (cislo <= 30)
+            {
+                VypisBarevne("Pane bože… to je moc! Jsi normální? Vždyť mi shoří procesor!!! Naposled!", ConsoleColor.Yellow);
+            }
+            else
+            {
+                if (rng.NextDouble() < 0.50)
+                {
+                    VypisBarevne("Tohle počítat nebudu!!!", ConsoleColor.Yellow);
+                    return false;
+                }
+                VypisBarevne("Pane bože… to je obří číslo! Ale dobře… snad to dám...", ConsoleColor.Yellow);
+            }
+
+            return true;
+        }
+
+        private static int SpocitejFaktorial(int cislo)
+        {
+            int vysledek = 1;
+            for (int i = 1; i <= cislo; i++)
+                vysledek *= i;
+            return vysledek;
+        }
+
+        private static bool JeVikend()
+        {
+            var dnes = DateTime.Now.DayOfWeek;
+            return dnes == DayOfWeek.Saturday || dnes == DayOfWeek.Sunday;
+        }
+
+        private static void VypisBarevne(string text, ConsoleColor barva)
+        {
+            Console.ForegroundColor = barva;
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
+
+        /// <summary>
+        /// Animace "přemýšlení" – pohybující se blok v konzoli.
+        /// Délka animace roste s velikostí zadaného čísla.
+        /// </summary>
+        private static void AnimacePremysleni(int cislo)
+        {
+            const int delka = 20;
             int pozice = 0;
             int smer = 1;
+            int cykly = Math.Clamp(cislo * 2, 10, 120);
 
-            // schovat kurzor
-            Console.Write("\u001b[?25l");
-
-            // počet cyklů podle čísla
-            int cykly = Math.Clamp(hodnota * 2, 10, 120);
+            Console.Write("\u001b[?25l"); // schovat kurzor
 
             for (int t = 0; t < cykly; t++)
             {
@@ -63,146 +165,26 @@ namespace LinyPocitacFaktorialu
 
                 Console.ResetColor();
                 Console.Write("]");
-
                 Thread.Sleep(60);
 
                 pozice += smer;
-
                 if (pozice <= 0 || pozice >= delka - 1)
                     smer *= -1;
             }
 
-            // ukázat kurzor
-            Console.Write("\u001b[?25h");
-
+            Console.Write("\u001b[?25h"); // ukázat kurzor
             Console.ResetColor();
             Console.WriteLine();
         }
 
-
-
-        private bool JeVikend()
-        {
-            var dnes = DateTime.Now.DayOfWeek;
-            return dnes == DayOfWeek.Saturday || dnes == DayOfWeek.Sunday;
-        }
-
-        public int Faktorial()
-        {
-            // Neplatný vstup (záporné číslo)
-            if (hodnota < 0)
-            {
-                pocetOdmítnutí++;
-                return -1;
-            }
-
-            // Víkendový režim – 40 % šance odmítnutí
-            if (JeVikend())
-            {
-                if (rng.NextDouble() < 0.40)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Je víkend. Dneska fakt ne.");
-                    Console.ResetColor();
-                    pocetOdmítnutí++;
-                    return -1;
-                }
-            }
-
-            // Únava po 3 výpočtech
-            if (pocetVypoctu >= 3)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Jsem unavený. Už toho bylo dost.");
-                Console.ResetColor();
-                pocetOdmítnutí++;
-                return -1;
-            }
-
-            // Náhodná lenost
-            if (rng.Next(0, 5) == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Dneska se mi nechce.");
-                Console.ResetColor();
-                pocetOdmítnutí++;
-                return -1;
-            }
-
-            // Už to počítal
-            if (ulozenyFaktorial.HasValue)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Už jsem to jednou počítal, tady máš.");
-                Console.ResetColor();
-                return ulozenyFaktorial.Value;
-            }
-
-            // Animace přemýšlení
-            AnimacePremysleni();
-
-            // ⭐ DRAMATICKÁ NÁLADA PODLE VELIKOSTI ČÍSLA ⭐
-            if (hodnota <= 5)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Meh, to dám levou zadní.");
-                Console.ResetColor();
-            }
-            else if (hodnota <= 15)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Tohle nezvládnu... ale dobře, zkusím to.");
-                Console.ResetColor();
-            }
-            else if (hodnota <= 30)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Pane bože… to je moc! Jsi normální? Vždyť mi shoří procesor!!! Naposled!");
-                Console.ResetColor();
-            }
-            else
-            {
-                // ⭐ 50% šance, že to odmítne úplně ⭐
-                if (rng.NextDouble() < 0.50)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Tohle počítat nebudu!!!");
-                    Console.ResetColor();
-
-                    pocetOdmítnutí++;
-                    return -1; // → hlavní program si vyžádá nové číslo
-                }
-
-                // ⭐ 50% šance, že to vezme, ale bude remcat ⭐
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Pane bože… to je obří číslo! Ale dobře… snad to dám...");
-                Console.ResetColor();
-            }
-
-
-            int vysledek = 1;
-
-            for (int i = 1; i <= hodnota; i++)
-            {
-                vysledek *= i;
-            }
-
-            ulozenyFaktorial = vysledek;
-            pocetVypoctu++;
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("No dobře, že jsi to ty, tak jsem ti to spočítal.");
-            Console.ResetColor();
-
-            return vysledek;
-        }
-
-
+        /// <summary>
+        /// Vypíše statistiky línosti za celý běh programu.
+        /// </summary>
         public void Statistiky()
         {
             Console.WriteLine($"\nStatistiky línosti:");
             Console.WriteLine($"- Počet výpočtů: {pocetVypoctu}");
-            Console.WriteLine($"- Počet odmítnutí: {pocetOdmítnutí}");
+            Console.WriteLine($"- Počet odmítnutí: {pocetOdmitnuti}");
         }
     }
 }

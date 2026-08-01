@@ -62,8 +62,10 @@ Občas zahlásí něco jako:
 „Tohle nezvládnu… ale dobře, zkusím to.“
 
 ### Cache
-Když už to jednou spočítal, tak to znovu dělat nebude.
-Protože proč by měl.
+Program si pamatuje výsledek pro každé číslo, které už jednou spočítal – ne jen pro to poslední.
+Když zadáš číslo, které už řešil dřív (třeba i o pět pokusů zpátky), prostě ti řekne:
+„Už jsem to jednou počítal, tady máš.“
+A ani se nenamáhá to počítat znovu. Protože proč by měl.
 
 ### Statistiky línosti
 Počítá, kolikrát odmítl a kolikrát se překonal.
@@ -180,32 +182,24 @@ Projekt je licencován pod FňukLicense 1.0:
 
 ---
 
-## Bonus: Co všechno verze 1.0.0 obsahuje
+---
 
-- víkendový režim
-- únava
-- nálady
-- dramatické výstupy
-- cache
-- počítadlo odmítnutí
-- počítadlo výpočtů
-- sarkasmus
-- pasivní agresivita
-- a hlavně: lenost
+## Release
 
-## Verze 1.1.0 obsahuje navíc
-- animace přemýšlení
-- barevné hlášky podle typu
+**v1.0.0** – První verze. Líný faktoriál s víkendovým režimem, únavou, náladami, dramatickými hláškami, cache a počítadlem odmítnutí/výpočtů.  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.0.0)
 
-## Verze 1.2.0
-- opraveno víkendové počítání na náhodnost 40% odmítnutí počítání o víkendu
-- opravena chyba, kdy po zadání záporného čísla aplikace už nepadá
-- oprava chyby, kde při záporném čísle program vypisoval dvě hlášky místo jedné
+**v1.1.0** – Přidána animace přemýšlení a barevné rozlišení hlášek podle typu (odmítnutí, úspěch, remcání).  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.1.0)
 
-## Verze 1.3.0
-- dopracovaný cyklus animace přemýšlení - čím větší císlo, tím déle přemýšlí
-- při přemýšlení se schová kurzor, po dokončení přemýšlení se zjeví
+**v1.2.0** – Víkendové odmítnutí nově jen s 40% pravděpodobností místo jistoty. Opravena chyba, kdy zadání záporného čísla shazovalo aplikaci. Opravena duplicitní hláška zobrazovaná dvakrát při záporném čísle.  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.2.0)
 
-## Verze 1.4.0
-- přidáno remcání na velké čísla
-- při číslech nad 31 je 50% sance odmítnutí výpočtu faktoriálu
+**v1.3.0** – Animace přemýšlení nyní trvá déle u větších čísel. Kurzor se během přemýšlení schová a po dokončení se opět zobrazí.  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.3.0)
+
+**v1.4.0** – Přidáno remcání při zadání velkého čísla. Čísla nad 31 mají 50% šanci na úplné odmítnutí výpočtu.  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.4.0)
+
+**v1.5.0** – `LinyFaktorial` nyní žije jako jedna instance po celou dobu běhu programu místo vytváření nové instance pro každé zadané číslo – únava a nálada se tak počítají napříč všemi čísly, ne jen pro poslední zadané. Cache rozšířena z jedné uložené hodnoty na `Dictionary<int, int>`, takže si program pamatuje výsledky pro každé dříve zadané číslo zvlášť, ne jen pro to poslední.  
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.5.0)

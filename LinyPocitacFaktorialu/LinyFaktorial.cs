@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LinyPocitacFaktorialu
+﻿namespace LinyPocitacFaktorialu
 {
-    /// <summary>
-    /// Simuluje "líného" pracovníka, který počítá faktoriály.
-    /// Odmlouvá, unaví se po několika výpočtech a pamatuje si
-    /// už jednou spočítané hodnoty.
-    /// </summary>
     class LinyFaktorial
     {
         private readonly Dictionary<int, int> jizSpocitane = [];
@@ -19,14 +8,8 @@ namespace LinyPocitacFaktorialu
         private int pocetVypoctu = 0;
         private int pocetOdmitnuti = 0;
 
-        /// <summary>
-        /// Spočítá faktoriál zadaného čísla. Podle nálady a historie
-        /// předchozích výpočtů může odmítnout, otálet, nebo použít
-        /// dříve uložený výsledek.
-        /// </summary>
-        /// <param name="cislo">Číslo, jehož faktoriál se má spočítat.</param>
-        /// <returns>Výsledný faktoriál, nebo -1 při odmítnutí/neplatném vstupu.</returns>
-        public int Faktorial(int cislo)
+        // Podle konvencí v C# se asynchronní metody pojmenovávají s příponou "Async"
+        public async Task<int> FaktorialAsync(int cislo)
         {
             if (cislo < 0)
             {
@@ -35,7 +18,6 @@ namespace LinyPocitacFaktorialu
                 return -1;
             }
 
-            // Už tohle číslo počítal dřív
             if (jizSpocitane.TryGetValue(cislo, out int ulozenyVysledek))
             {
                 VypisBarevne("Už jsem to jednou počítal, tady máš.", ConsoleColor.Yellow);
@@ -66,10 +48,11 @@ namespace LinyPocitacFaktorialu
             if (!ReagujPodleVelikosti(cislo))
             {
                 pocetOdmitnuti++;
-                return -1; // odmítl kvůli velikosti čísla
+                return -1;
             }
 
-            AnimacePremysleni(cislo);
+            // === CEKAME NA ANIMACI ASYNCHRONNĚ ===
+            await AnimacePremysleniAsync(cislo);
 
             int vysledek = SpocitejFaktorial(cislo);
             jizSpocitane[cislo] = vysledek;
@@ -79,25 +62,14 @@ namespace LinyPocitacFaktorialu
             return vysledek;
         }
 
-        /// <summary>
-        /// Zobrazí náladovou hlášku podle velikosti čísla.
-        /// U velmi velkých čísel má 50% šanci výpočet rovnou odmítnout.
-        /// </summary>
-        /// <returns>False, pokud výpočet odmítá kvůli velikosti čísla.</returns>
         private bool ReagujPodleVelikosti(int cislo)
         {
             if (cislo <= 5)
-            {
                 VypisBarevne("Meh, to dám levou zadní.", ConsoleColor.Yellow);
-            }
             else if (cislo <= 15)
-            {
                 VypisBarevne("Tohle nezvládnu... ale dobře, zkusím to.", ConsoleColor.Yellow);
-            }
             else if (cislo <= 30)
-            {
                 VypisBarevne("Pane bože… to je moc! Jsi normální? Vždyť mi shoří procesor!!! Naposled!", ConsoleColor.Yellow);
-            }
             else
             {
                 if (rng.NextDouble() < 0.50)
@@ -132,18 +104,15 @@ namespace LinyPocitacFaktorialu
             Console.ResetColor();
         }
 
-        /// <summary>
-        /// Animace "přemýšlení" – pohybující se blok v konzoli.
-        /// Délka animace roste s velikostí zadaného čísla.
-        /// </summary>
-        private static void AnimacePremysleni(int cislo)
+        // Animace je teď plně asynchronní
+        private static async Task AnimacePremysleniAsync(int cislo)
         {
             const int delka = 20;
             int pozice = 0;
             int smer = 1;
             int cykly = Math.Clamp(cislo * 2, 10, 120);
 
-            Console.Write("\u001b[?25l"); // schovat kurzor
+            Console.Write("\u001b[?25l");
 
             for (int t = 0; t < cykly; t++)
             {
@@ -165,21 +134,21 @@ namespace LinyPocitacFaktorialu
 
                 Console.ResetColor();
                 Console.Write("]");
-                Thread.Sleep(60);
+                
+                // === TADY JE TA MAGIE ===
+                // Místo Thread.Sleep(60) použijeme uvolňující Task.Delay:
+                await Task.Delay(60);
 
                 pozice += smer;
                 if (pozice <= 0 || pozice >= delka - 1)
                     smer *= -1;
             }
 
-            Console.Write("\u001b[?25h"); // ukázat kurzor
+            Console.Write("\u001b[?25h");
             Console.ResetColor();
             Console.WriteLine();
         }
 
-        /// <summary>
-        /// Vypíše statistiky línosti za celý běh programu.
-        /// </summary>
         public void Statistiky()
         {
             Console.WriteLine($"\nStatistiky línosti:");

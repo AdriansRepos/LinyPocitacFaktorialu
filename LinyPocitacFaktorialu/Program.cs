@@ -23,7 +23,8 @@ do
         continue;
     }
 
-    int f = liny.Faktorial(cislo);
+    // === ASYNCHRONNÍ VOLÁNÍ (neblokuje vlákno) ===
+    int f = await liny.FaktorialAsync(cislo);
 
     if (f != -1)
     {
@@ -39,4 +40,6 @@ liny.Statistiky();
 Console.ForegroundColor = ConsoleColor.Magenta;
 Console.WriteLine("\nNo konečně máš dobrý nápad.");
 Console.ResetColor();
-Thread.Sleep(3000);
+
+// Místo Thread.Sleep(3000) uvolníme vlákno:
+await Task.Delay(3000);

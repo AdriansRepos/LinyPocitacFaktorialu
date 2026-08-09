@@ -13,7 +13,7 @@ Program kombinuje:
 - faktoriál
 - lenost
 - nálady
-- animace
+- plně asynchronní animace (`async`/`await`)
 - víkendový režim
 - únavu
 - cache
@@ -42,6 +42,11 @@ Je to jako spolupracovat s kolegou, který má pondělí každý den.
 
 ## Funkce a vlastnosti
 
+### Asynchronní fňukání (`async`/`await`)
+Program při čekání a přemýšlení **neblokuje vlákno procesoru**. 
+Používá `await Task.Delay()`, takže i když natahuje čas a předstírá práci, 
+spotřebovává přesně **0 % CPU**. Lenoší efektivně!
+
 ### Lenost (20 % šance)
 Program prostě řekne:
 „Dneska se mi nechce.“
@@ -55,7 +60,7 @@ Po třech výpočtech už má dost a odmítá dál pracovat.
 
 ### Animace přemýšlení
 Vypadá to, jako že fakt maká.
-Ve skutečnosti jen natahuje čas.
+Ve skutečnosti jen asynchronně natahuje čas.
 
 ### Dramatické hlášky
 Občas zahlásí něco jako:
@@ -78,65 +83,60 @@ Počítá, kolikrát odmítl a kolikrát se překonal.
 - Zadej číslo.
 - Doufej, že se mu chce.
 - Pokud ne, zkus to znovu.
-- Pokud tě to přestane bavit, napiš konec.
+- Pokud tě to přestane bavit, napiš `konec`.
 
 Na konci program vypíše:
 „No konečně máš dobrý nápad.“  
-A dá ti 3 sekundy na zamyšlení nad životem.
+A dá ti asynchronní 3 sekundy na zamyšlení nad životem.
 
 ---
 ## Ukázka kódu
 
 ```csharp
-private void AnimacePremysleni()
+// Asynchronní přemýšlení - uvolňuje vlákno procesoru
+private static async Task AnimacePremysleniAsync(int cislo)
 {
-    string[] anim = { ".", "..", "...", "...." };
-    foreach (var a in anim)
-    {
-        Console.Write($"\rPřemýšlím{a}");
-        Thread.Sleep(1000);
-    }
-    Console.Write("\r                \r");
-}
+    int cykly = Math.Clamp(cislo * 2, 10, 120);
+    Console.Write("\u001b[?25l"); // schovat kurzor
 
-private bool JeVikend()
-{
-    var dnes = DateTime.Now.DayOfWeek;
-    return dnes == DayOfWeek.Saturday || dnes == DayOfWeek.Sunday;
-}
-
-public int Faktorial()
-{
-    // Víkendový režim
-    if (JeVikend())
+    for (int t = 0; t < cykly; t++)
     {
-        Console.WriteLine("Je víkend. Dneska fakt ne.");
-        pocetOdmítnutí++;
-        return -1;
+        // ... vykreslení animace ...
+        
+        // Žádný blokující Thread.Sleep! Pěkně asynchronní uvolnění vlákna:
+        await Task.Delay(60); 
     }
 
+    Console.Write("\u001b[?25h"); // ukázat kurzor
+}
+
+public async Task<int> FaktorialAsync(int cislo)
+{
     // Únava po 3 výpočtech
     if (pocetVypoctu >= 3)
     {
-        Console.WriteLine("Jsem unavený. Už toho bylo dost.");
-        pocetOdmítnutí++;
+        VypisBarevne("Jsem unavený. Už toho bylo dost.", ConsoleColor.Red);
+        pocetOdmitnuti++;
         return -1;
     }
 
-    // Náhodná lenost
-    if (rng.Next(0, 5) == 0)
-    {
-        Console.WriteLine("Dneska se mi nechce.");
-        pocetOdmítnutí++;
-        return -1;
-    }
+    // Spuštění asynchronní animace
+    await AnimacePremysleniAsync(cislo);
+
+    int vysledek = SpocitejFaktorial(cislo);
+    jizSpocitane[cislo] = vysledek;
+    pocetVypoctu++;
+
+    return vysledek;
+}
 ```
 ---
 
 ## Ukázka chování
 
+Ukázka chování
 Zadej číslo: 5
-Přemýšlím...
+Přemýšlím: [████░░░░░░░░░░░░░░░░]
 No dobře, že jsi to ty, tak jsem ti to spočítal.
 5! = 120
 
@@ -169,8 +169,8 @@ No dobře, že jsi to ty, tak jsem ti to spočítal.
 ## Proč to existuje
 
 Protože faktoriál je nudný.
-Ale líný faktoriál?
-To je umění.
+Ale líný, asynchronní faktoriál?
+To je umění moderního programování.
 
 ---
 
@@ -179,8 +179,6 @@ To je umění.
 Projekt je licencován pod FňukLicense 1.0:
 
 - „Můžeš to používat, ale nesmíš se divit, když to nebude fungovat.“
-
----
 
 ---
 
@@ -203,3 +201,6 @@ Projekt je licencován pod FňukLicense 1.0:
 
 **v1.5.0** – `LinyFaktorial` nyní žije jako jedna instance po celou dobu běhu programu místo vytváření nové instance pro každé zadané číslo – únava a nálada se tak počítají napříč všemi čísly, ne jen pro poslední zadané. Cache rozšířena z jedné uložené hodnoty na `Dictionary<int, int>`, takže si program pamatuje výsledky pro každé dříve zadané číslo zvlášť, ne jen pro to poslední.  
 [Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v1.5.0)
+
+**v2.0.0** – Asynchronní revoluce (async/await). Blokující příkazy Thread.Sleep nahrazeny asynchronním Task.Delay. Aplikace uvolňuje vlákno procesoru během fňukání a animací – spotřebovává 0 % CPU, když nic nedělá. Přidán posuvník (progress bar) animace v konzoli.
+[Stáhnout zde](https://github.com/AdriansRepos/LinyPocitacFaktorialu/releases/tag/v2.0.0)
